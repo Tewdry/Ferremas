@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from audioop import reverse
 from django.contrib import messages
 from django.db.models import Count
@@ -24,10 +25,23 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from django.views.decorators.csrf import csrf_exempt
+=======
+from django.contrib import messages
+from django.db.models import Count
+from django.shortcuts import render, redirect
+from django.views import View
+from . models import Cart, Customer, Product
+from . forms import CustomerRegistrationForm, CustomerProfileForm
+from django.http import JsonResponse
+from django.db.models import Q
+import requests
+from transbank.webpay.webpay_plus.transaction import Transaction
+>>>>>>> 98aec02a70593aa42794e8f9f21285d80567ae6f
 
 # Create your views here.
 
 def home(request):
+<<<<<<< HEAD
     return render(request, "app/home.html")
 
 def about(request):
@@ -69,6 +83,45 @@ class ProfileView(LoginRequiredMixin, View):
         return render(request, 'app/profile.html', locals())
     
     def post(self, request):
+=======
+    return render(request,"app/home.html")
+
+def about(request):
+    return render(request,"app/about.html")
+
+def contact(request):
+    return render(request,"app/contact.html")
+
+class CategoryView(View):
+    def get(self,request,val):
+        product = Product.objects.filter(category=val)
+        title = Product.objects.filter(category=val).values('title')
+        return render(request,"app/category.html",locals())
+    
+class ProductDetail(View):
+    def get(self,request,pk):
+        product = Product.objects.get(pk=pk)
+        return render(request,"app/productdetail.html",locals())
+    
+class CustomerRegistrationView(View):
+    def get(self,request):
+        form = CustomerRegistrationForm()
+        return render(request,"app/customerregistration.html",locals())
+    def post(self,request):
+        form = CustomerRegistrationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request,"Usuario Creado Correctamente!")
+        else:
+            messages.warning(request,"No se ha podido crear el Usuario")
+        return render(request,"app/customerregistration.html",locals())
+    
+class ProfileView(View):
+    def get(self,request):
+        form = CustomerProfileForm()
+        return render(request, 'app/profile.html',locals())
+    def post(self,request):
+>>>>>>> 98aec02a70593aa42794e8f9f21285d80567ae6f
         form = CustomerProfileForm(request.POST)
         if form.is_valid():
             user = request.user
@@ -79,6 +132,7 @@ class ProfileView(LoginRequiredMixin, View):
             state = form.cleaned_data['state']
             zipcode = form.cleaned_data['zipcode']
 
+<<<<<<< HEAD
             reg = Customer(user=user, name=name, locality=locality, city=city, mobile=mobile,
                            state=state, zipcode=zipcode)
             reg.save()
@@ -113,6 +167,29 @@ class UpdateAddress(LoginRequiredMixin, View):
         form = CustomerProfileForm(request.POST)
         if form.is_valid():
             add = get_object_or_404(Customer, pk=pk)
+=======
+            reg = Customer(user=user,name=name,locality=locality,city=city,mobile=mobile,
+                            state=state,zipcode=zipcode)
+            reg.save()
+            messages.success(request,'Perfil guardado correctamente!')
+        else:
+            messages.warning(request,"No se ha podido guardar el perfil!")
+        return render(request, 'app/profile.html',locals())
+    
+def address(request):
+    add = Customer.objects.filter(user=request.user)
+    return render(request, 'app/address.html',locals())
+
+class updateAddress(View):
+    def get(self,request,pk):
+        add = Customer.objects.get(pk=pk)
+        form = CustomerProfileForm(instance=add)
+        return render(request, 'app/updateAddress.html',locals())
+    def post(self,request,pk):
+        form = CustomerProfileForm(request.POST)
+        if form.is_valid():
+            add = Customer.objects.get(pk=pk)
+>>>>>>> 98aec02a70593aa42794e8f9f21285d80567ae6f
             add.name = form.cleaned_data['name']
             add.locality = form.cleaned_data['locality']
             add.city = form.cleaned_data['city']
@@ -120,6 +197,7 @@ class UpdateAddress(LoginRequiredMixin, View):
             add.state = form.cleaned_data['state']
             add.zipcode = form.cleaned_data['zipcode']
             add.save()
+<<<<<<< HEAD
             messages.success(request, "Perfil actualizado correctamente!")
         else:
             messages.warning(request, "No se ha podido actualizar el perfil!")
@@ -215,6 +293,100 @@ def remove_cart(request):
         totalamount = amount + 40
         data = {'amount': amount, 'totalamount': totalamount}
         return JsonResponse(data)
+=======
+            messages.success(request,"Perfil actualizado correctamente!")
+        else:
+            messages.warning(request,"No se ha podido actualizar el perfil!")
+        return redirect("address")
+
+def add_to_cart(request):
+    user=request.user
+    product_id=request.GET.get('prod_id')
+    product = Product.objects.get(id=product_id)
+    Cart(user=user,product=product).save()
+    return redirect("/cart")
+
+def show_cart(request):
+    user = request.user
+    cart = Cart.objects.filter(user=user)
+    amount = 0
+    for p in cart:
+        value = p.quantity * p.product.discounted_price
+        amount = amount * value
+    totalamount = amount * 40
+    return render(request, 'app/addtocart.html',locals())
+
+class checkout(View):
+    def get(self,request):
+        user=request.user
+        add=Customer.objects.filter(user=user)
+        cart_items=Cart.objects.filter(user=user)
+        famount = 0
+        for p in cart_items:
+            value = p.quantity * p.product.discounted_price
+            famount = famount + value
+        totalamount = famount + 40
+        return render(request, 'app/checkout.html',locals())
+    
+def plus_cart(request):
+    if request.method == 'GET':
+        prod_id=request.GET['prod_id']
+        c = Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
+        c.quantity+=1
+        c.save()
+        user = request.user
+        cart = Cart.objects.filter(user=user)
+        amount = 0
+        for p in cart:
+            value = p.quantity * p.product.discounted_price
+            amount = amount + value
+        totalamount = amount + 40
+        data={
+            'quantity':c.quantity,
+            'amount':amount,
+            'totalamount':totalamount
+        }
+        return JsonResponse(data)
+    
+def remove_cart(request):
+    if request.method == 'GET':
+        prod_id=request.GET['prod_id']
+        c = Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
+        c.delete()
+        user = request.user
+        cart = Cart.objects.filter(user=user)
+        amount = 0
+        for p in cart:
+            value = p.quantity * p.product.discounted_price
+            amount = amount + value
+        totalamount = amount + 40
+        data={
+            'amount':amount,
+            'totalamount':totalamount
+        }
+        return JsonResponse(data)
+    
+def minus_cart(request):
+    if request.method == 'GET':
+        prod_id=request.GET['prod_id']
+        c = Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
+        c.quantity+=1
+        c.save()
+        user = request.user
+        cart = Cart.objects.filter(user=user)
+        amount = 0
+        for p in cart:
+            value = p.quantity * p.product.discounted_price
+            amount = amount + value
+        totalamount = amount + 40
+        data={
+            'quantity':c.quantity,
+            'amount':amount,
+            'totalamount':totalamount
+        }
+        return JsonResponse(data)
+
+>>>>>>> 98aec02a70593aa42794e8f9f21285d80567ae6f
 
 def convert_currency(request):
     if request.method == 'GET':
@@ -230,6 +402,7 @@ def convert_currency(request):
         except ValueError:
             return JsonResponse({'error': 'Invalid amount'}, status=400)
 
+<<<<<<< HEAD
         # Valores iniciales de las monedas
         from_rate = 1
         to_rate = 1
@@ -454,3 +627,48 @@ def search(request):
     query = request.GET.get('q')
     products = Product.objects.filter(title__icontains=query)
     return render(request, 'app/search_results.html', {'products': products})
+=======
+        api_url = f'https://mindicador.cl/api/{from_currency}'
+        response = requests.get(api_url)
+
+        if response.status_code == 200:
+            data = response.json()
+            if 'serie' in data:
+                from_rate = data['serie'][0]['valor']
+                to_rate = data['serie'][0]['valor']
+                if from_currency != 'uf':
+                    to_rate = requests.get(f'https://mindicador.cl/api/{to_currency}').json()['serie'][0]['valor']
+                result = (amount / from_rate) * to_rate
+                return JsonResponse({'result': result})
+            else:
+                return JsonResponse({'error': 'Invalid currency'}, status=400)
+        else:
+            return JsonResponse({'error': 'Failed to fetch exchange rates'}, status=500)
+    else:
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+    
+def api_view(request):
+    api_url = 'https://mindicador.cl/api'
+    response = requests.get(api_url)
+    if response.status_code == 200:
+        data = response.json()
+        
+        # Lógica para convertir los datos de la API a otra moneda
+        # Supongamos que queremos convertir el valor del dólar a pesos chilenos
+        if 'dolar' in data:
+            dolar_value = data['dolar']['valor']
+            converted_value = dolar_value * 800 # Supongamos que 1 dólar equivale a 800 pesos chilenos
+            data['dolar']['valor'] = converted_value
+        
+        return render(request, 'app/api_view.html', {'data': data})
+    else:
+        return JsonResponse({'error': 'Failed to fetch data from API'}, status=500)
+    
+
+def create_transaction(request):
+    # Lógica para crear la transacción en Transbank
+    # Aquí puedes utilizar el SDK de Transbank para crear la transacción
+
+    # Después de crear la transacción, redirigir al usuario a la página de Transbank
+    return redirect('https://www.transbank.cl/')  # Reemplaza con la URL de Transbank
+>>>>>>> 98aec02a70593aa42794e8f9f21285d80567ae6f

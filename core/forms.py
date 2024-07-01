@@ -2,7 +2,11 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UsernameField, PasswordChangeForm, SetPasswordForm, PasswordResetForm
 from django.contrib.auth.models import User
 
+<<<<<<< HEAD
 from .models import Customer,Order
+=======
+from .models import Customer
+>>>>>>> 98aec02a70593aa42794e8f9f21285d80567ae6f
 
 class LoginForm(AuthenticationForm):
     username = UsernameField(label='Usuario',widget=forms.TextInput(attrs=
@@ -52,9 +56,13 @@ class CustomerProfileForm(forms.ModelForm):
             'mobile':forms.NumberInput(attrs={'class':'form-control'}),
             'state':forms.Select(attrs={'class':'form-control'}),
             'zipcode':forms.NumberInput(attrs={'class':'form-control'}),
+<<<<<<< HEAD
         }
 
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
         fields = ['status']
+=======
+        }
+>>>>>>> 98aec02a70593aa42794e8f9f21285d80567ae6f

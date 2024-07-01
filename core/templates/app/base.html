@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="{% static 'core/css/all.min.css' %}">
     <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
 
+<<<<<<< HEAD
     <title>Productos Ferremax | {% block title %}{% endblock title %}</title>
     <style>
         .navbar-custom {
@@ -41,10 +42,14 @@
             min-height: calc(100vh - 56px - 40px); /* Altura mínima: Altura de la ventana menos la altura del navbar y del footer */
         }
     </style>
+=======
+    <title> Productos Ferremax | {% block title %}{% endblock title %}</title>
+>>>>>>> 98aec02a70593aa42794e8f9f21285d80567ae6f
 </head>
 <body>
 
     <!-- NAVBAR -->
+<<<<<<< HEAD
     <nav class="navbar navbar-expand-lg navbar-custom">
         <div class="container-fluid">
             <a class="navbar-brand" href="{% url 'home' %}">
@@ -129,6 +134,86 @@
                 <a href="" class="footer-links">Política de Privacidad</a>
             </div>
         </div>
+=======
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #0F0F0F;">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#" value="">
+            <p><i style="color:white;">Ferre</i><strong style="color:rgb(209, 15, 15);">mas</strong>  <img src="{% static 'app/images/Ferremas.png' %}" width="20" height="20" /></p>
+          </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              {% if request.user.is_authenticated %}
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="#">Inicio</a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Productos
+                </a>
+                
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <li><a class="dropdown-item" href="{% url 'category' 'HR' %}">Herramientas Manuales</a></li>
+                  <li><a class="dropdown-item" href="{% url 'category' 'MB' %}">Materiales Básicos</a></li>
+                  <li><a class="dropdown-item" href="{% url 'category' 'SG' %}">Equipos de Seguridad</a></li>
+                </ul>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-white" href="{% url 'about' %}">Sobre Nosotros</a>
+              </li>
+
+              <li class="nav-item">
+                <a class="nav-link text-white" href="{% url 'contact' %}">Contactanos</a>
+              </li>
+            </ul>
+
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item dropdown mx-2">
+                  <a class="nav-link dropdown-toggle text-white" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Cuenta</a>
+                  <ul class="dropdown-menu" aria-labelledby="profileDropdown">
+                      <li><a class="dropdown-item" href="{% url 'profile' %}">Perfil</a></li>
+                      <li><a class="dropdown-item" href="{% url 'api_view' %}">API</a></li>
+                      <li><a class="dropdown-item" href="#">Ordenes</a></li>
+                      <li><a class="dropdown-item" href="{% url 'passwordchange' %}">Cambiar Contraseña</a></li>
+                      <li><a class="dropdown-item" href="{% url 'logout' %}">Cerrar Sesión</a></li>
+                      
+                  </ul>
+              </li>
+              {% else %}
+              <li class="nav-item mx-2">
+                  <a href="{% url 'login' %}" class="nav-link text-white">Iniciar Sesión</a>
+              </li>
+              <li class="nav-item mx-2">
+                  <a href="{% url 'customerregistration' %}" class="nav-link text-white">Registrate</a>
+              </li>
+              {% endif %}
+          </ul>
+          
+            <form class="d-flex">
+              <input class="form-control me-2" type="search" placeholder="..." aria-label="Buscar">
+              <button class="btn btn-outline-danger" type="submit">Buscar</button>
+            </form>
+          </div>
+
+        </div>
+    </nav>
+    
+    <!-- FIN NAVBAR--> 
+    {% block banner-slider %}{% endblock banner-slider %}
+    {% block information %}{% endblock information %}
+    {% block main-content %}{% endblock main-content %}
+
+    <footer class="container-fluid fixed-bottom text-center p-2 mt-5" style="background-color:rgb(209, 15, 15);">
+      <div id="copyright" align="center">&copy; 2024 - 2024 www.ferremas.cl - All Rights Reserved.</div>
+      <script style="#copyright{color:white;}">
+      (() => {
+          let cpr = document.getElementById("copyright");
+          cpr.innerHTML = "&copy; 2024 - "+new Date().getFullYear()+" www.ferremas.cl - All Rights Reserved.";
+      })();
+      </script>
+>>>>>>> 98aec02a70593aa42794e8f9f21285d80567ae6f
     </footer>
 
     <!-- JS BOOSTRAP -->
@@ -141,8 +226,11 @@
     <script src="{% static 'core/js/all.min.js' %}"></script>
     <script src="{% static 'core/js/myscript.js' %}"></script>
 
+<<<<<<< HEAD
     <script>
         document.getElementById("currentYear").innerText = new Date().getFullYear();
     </script>
+=======
+>>>>>>> 98aec02a70593aa42794e8f9f21285d80567ae6f
 </body>
 </html>
