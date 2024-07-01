@@ -1,0 +1,58 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %}Carrito de Compras{% endblock title %}
+
+{% block main-content %}
+<div class="container mt-5">
+    <h2>Carrito de Compras</h2>
+    {% if cart %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>Subtotal</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart %}
+                    <tr>
+                        <td>{{ item.product.title }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-danger" onclick="updateCart('{{ item.product.id }}', 'minus')">-</button>
+                            {{ item.quantity }}
+                            <button class="btn btn-sm btn-success" onclick="updateCart('{{ item.product.id }}', 'plus')">+</button>
+                        </td>
+                        <td>{{ item.product.discounted_price }}</td>
+                        <td>{{ item.quantity|floatformat:2|add:item.product.discounted_price|floatformat:2 }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-danger" onclick="updateCart('{{ item.product.id }}', 'remove')">Eliminar</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <h4>Total: {{ totalamount }}</h4>
+        <a href="{% url 'checkout' %}" class="btn btn-primary">Proceder al Pago</a>
+    {% else %}
+        <p>Tu carrito está vacío.</p>
+    {% endif %}
+</div>
+
+<script>
+    function updateCart(prod_id, action) {
+        const url = {
+            'plus': '{% url "plus_cart" %}?prod_id=' + prod_id,
+            'minus': '{% url "minus_cart" %}?prod_id=' + prod_id,
+            'remove': '{% url "remove_cart" %}?prod_id=' + prod_id
+        }[action];
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => location.reload())
+            .catch(error => console.error('Error:', error));
+    }
+</script>
+{% endblock %}
